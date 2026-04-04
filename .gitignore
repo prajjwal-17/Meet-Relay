@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# better-auth auto-generated schema (use src/db/schema.ts instead)
+auth-schema.ts
