@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 
 export default function Home() {
-  return <Button variant={"custom"}>
-    Click me
-  </Button>
+  return <div>
+    <Button variant={"custom"}>
+      Click me by clicking me
+    </Button>
+  </div>
 }
