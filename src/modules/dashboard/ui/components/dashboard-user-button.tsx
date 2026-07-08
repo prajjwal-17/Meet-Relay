@@ -2,19 +2,27 @@ import { authClient } from "@/lib/auth-client"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { GeneratedAvatar } from "@/components/ui/generated-avatar";
 import { ChevronDownIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter,DrawerHeader,DrawerTitle,DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 
+function getInitials(name: string) {
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join("")
+}
 
 export const DashboardUserButton = () =>{
 
     const router = useRouter();
     const isMobile=useIsMobile()
     const {data, isPending} = authClient.useSession();
+    
 
     const onLogout=() =>{
            authClient.signOut({
@@ -26,21 +34,31 @@ export const DashboardUserButton = () =>{
         })
 
     }
-
+    
     if(isPending || !data?.user){
         return null;
     }
+    console.log("Session:", data.user.image);
+
+    const avatar = (
+        <Avatar className="size-9 shrink-0 mr-3">
+            <AvatarImage
+                src={data.user.image ?? ""}
+                alt={data.user.name}
+                referrerPolicy="no-referrer"
+                className="object-cover"
+            />
+            <AvatarFallback delayMs={600}>
+                {getInitials(data.user.name)}
+            </AvatarFallback>
+        </Avatar>
+    )
+
     if(isMobile){
         return (
             <Drawer>
-                <DrawerTrigger className="rounded-lg border border-border/10 p-3 w-full flex items-center justify-between bg-white/5 hover:bg-white/10 overflow-hidden">>
-                         {data.user.image?(
-                    <Avatar>
-                        <AvatarImage src={data.user.image}/>
-                    </Avatar>
-                ) : (
-                    <GeneratedAvatar seed={data.user.name} variant="initials" className="size-9 mr-3"/>
-                )}
+                <DrawerTrigger className="rounded-lg border border-border/10 p-3 w-full flex items-center justify-between bg-white/5 hover:bg-white/10 overflow-hidden">
+                    {avatar}
             <div className="flex flex-col gap-0.5 text-left overflow-hidden gap-x-2 flex-1 min-w-0">
                 <p className="text-sm truncate w-full">
                     {data.user.name}
@@ -80,13 +98,7 @@ export const DashboardUserButton = () =>{
     return(
         <DropdownMenu>
             <DropdownMenuTrigger className="rounded-lg border border-border/10 p-3 w-full flex items-center justify-between bg-white/5 hover:bg-white/10 overflow-hidden">
-                {data.user.image?(
-                    <Avatar>
-                        <AvatarImage src={data.user.image}/>
-                    </Avatar>
-                ) : (
-                    <GeneratedAvatar seed={data.user.name} variant="initials" className="size-9 mr-3"/>
-                )}
+                {avatar}
             <div className="flex flex-col gap-0.5 text-left overflow-hidden gap-x-2 flex-1 min-w-0">
                 <p className="text-sm truncate w-full">
                     {data.user.name}
